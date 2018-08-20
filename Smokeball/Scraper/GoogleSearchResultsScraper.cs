@@ -20,10 +20,10 @@ namespace Scraper
         public async Task<IEnumerable<int>> GetSeoRankings(string searchString, string targetSeoUrl)
         {
             if (string.IsNullOrEmpty(searchString))
-                throw new ArgumentNullException(searchString);
+                throw new ArgumentNullException(nameof(searchString));
 
             if (string.IsNullOrEmpty(targetSeoUrl))
-                throw new ArgumentNullException(targetSeoUrl);
+                throw new ArgumentNullException(nameof(targetSeoUrl));
 
             var rawHtml = await _googleSearcher.SendSearch(searchString);
 

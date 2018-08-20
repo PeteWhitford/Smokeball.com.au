@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -8,6 +10,41 @@ namespace Scraper.Tests
     [TestClass()]
     public class GoogleSearchResultsScraperTests
     {
+        [TestMethod()]
+        public async Task NoSearchStringThrowsException()
+        {
+             var expectedParameterName = "searchString";
+
+            try
+            {
+                var scraper = new GoogleSearchResultsScraper(new FakeGoogleSearcher(), new GoogleSearchResultsParser());
+
+                var actual = await scraper.GetSeoRankings(null, "www.smokeball.com.au");
+
+            }
+            catch (ArgumentNullException e)
+            {
+                Assert.AreEqual(expectedParameterName, e.ParamName);
+            }
+        }
+
+        [TestMethod()]
+        public async Task NoTargetUrlThrowsException()
+        {
+            var expectedParameterName = "targetSeoUrl";
+
+            try
+            {
+                var scraper = new GoogleSearchResultsScraper(new FakeGoogleSearcher(), new GoogleSearchResultsParser());
+
+                var actual = await scraper.GetSeoRankings("conveyancing+software", null);
+
+            }
+            catch (ArgumentNullException e)
+            {
+                Assert.AreEqual(expectedParameterName, e.ParamName);
+            }
+        }
         [TestMethod()]
         public async Task WhenPassed4thInListReturns4()
         {
@@ -20,6 +57,19 @@ namespace Scraper.Tests
             CollectionAssert.AreEqual(expected, actual.ToList());
         }
 
+        [TestMethod()]
+        public async Task ReturnsMultipleMatchesInArray()
+        {
+            var scraper = new GoogleSearchResultsScraper(new FakeGoogleSearcher(), new FakeSearchResultsParser());
+
+            var actual = await scraper.GetSeoRankings("conveyancing+software", "www.smokeball.com.au");
+
+            var expected = new List<int> { 2,4,5 };
+
+            CollectionAssert.AreEqual(expected, actual.ToList());
+        }
+
+
         public class FakeGoogleSearcher : IGoogleSearcher
         {
             private const string Html =
@@ -30,6 +80,22 @@ c.className.replace(/\bnb-fades\b/g,""""),0==d?a.className=""nb-disabled ""+a.cl
             public Task<string> SendSearch(string url)
             {
                 return Task.FromResult(Html);
+            }
+        }
+
+        public class FakeSearchResultsParser : IGoogleSearchResultsParser
+        {
+            public IEnumerable<Url> GetSearchResultUrls(string googleSearchResultsHtml)
+            {
+                return new List<Url>
+                {
+                    new Url("www.notsmokeball.com"),
+                    new Url("www.smokeball.com.au"),
+                    new Url("www.notsmokeball.com"),
+                    new Url("www.smokeball.com.au"),
+                    new Url("www.smokeball.com.au"),
+
+                };
             }
         }
 
