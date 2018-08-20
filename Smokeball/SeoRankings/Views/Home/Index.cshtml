@@ -1,0 +1,40 @@
+﻿@model IEnumerable<int>
+
+@{
+    ViewBag.Title = "Home Page";
+    var searchString = ViewBag.SearchString;
+}
+
+<div class="jumbotron">
+    <h1>Smokeball</h1>
+    <p class="lead">Check out our google search ranking</p>
+</div>
+
+@using (Html.BeginForm("Index", "Home", null, FormMethod.Post, new Dictionary<string, object> { { "style", "padding-top: 10px;" } }))
+{
+    <div class="row">
+        <div class="col-md-8">
+            <p>
+                <div class="col-md-5 form-group">
+                    <input name="searchString" class="form-control" id="searchString" value="@searchString" />
+                </div>
+                <div class="col-md-5 form-group">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </p>
+        </div>
+    </div>
+    <p>
+        <div class="col-md-5 form-group">
+            @if (Model.Any())
+            {
+                <text>Smokeball.com.au rankings: @string.Join(",", Model)</text>
+            }
+            else
+            {
+                <text>Smokeball.com.au not returned in top 100 search results</text>
+            }
+
+        </div>
+    </p>
+}
