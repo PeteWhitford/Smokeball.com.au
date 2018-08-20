@@ -12,7 +12,7 @@ namespace SeoRankings.Controllers
         {
             _scraper = scraper;
         }
-        public async Task<ActionResult> Index(string searchString = "smokeball", string smokeballLink = "www.smokeball.com.au")
+        public async Task<ActionResult> Index(string searchString = "conveyancing+software", string smokeballLink = "www.smokeball.com.au")
         {
             ViewBag.SearchString = searchString;
 
